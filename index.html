@@ -1611,36 +1611,60 @@ document.getElementById('personasList').style.display = 'none';
 document.getElementById('cancionField').style.display = 'none';
 
 
+const SHEETS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwFHMnXUcr5rHYrFLjPyb3csH2oDPm_MBuZUAEGfybkbioesQbgF3TUdN_ZUIbzK2ahdQ/exec';
+
 function submitRSVP() {
   const asistencia = document.querySelector('input[name="asistencia"]:checked').value;
-  let mensaje = '✨ *Cumpleaños de Rosario* ✨\n\n';
+  const submitBtn = document.getElementById('rsvpSubmitBtn');
+
+  let invitadoNombre = '', invitadoApellido = '';
+  let acompananteNombre = '', acompananteApellido = '';
 
   if (asistencia === 'no') {
     const inputs = document.querySelectorAll('#personasList .rsvp-input');
-    const nombre = inputs[0] ? inputs[0].value.trim() : '';
-    const apellido = inputs[1] ? inputs[1].value.trim() : '';
-    mensaje += `❌ *No podré asistir*\n\n`;
-    if (nombre || apellido) mensaje += `👤 Nombre del invitado: ${nombre} ${apellido}\n`;
+    invitadoNombre = inputs[0] ? inputs[0].value.trim() : '';
+    invitadoApellido = inputs[1] ? inputs[1].value.trim() : '';
   } else {
-    const bloque = document.querySelector('#personasList .person-block');
-    const inputs = bloque ? bloque.querySelectorAll('.rsvp-input') : [];
-    const nombre = inputs[0] ? inputs[0].value.trim() : '';
-    const apellido = inputs[1] ? inputs[1].value.trim() : '';
-    mensaje += `✅ *Confirmo mi asistencia*\n\n`;
-    mensaje += `👤 Nombre del invitado: ${nombre} ${apellido}\n`;
+    const bloques = document.querySelectorAll('#personasList .person-block');
+    if (bloques[0]) {
+      const inputs = bloques[0].querySelectorAll('.rsvp-input');
+      invitadoNombre = inputs[0] ? inputs[0].value.trim() : '';
+      invitadoApellido = inputs[1] ? inputs[1].value.trim() : '';
+    }
+    if (bloques[1]) {
+      const inputs = bloques[1].querySelectorAll('.rsvp-input');
+      acompananteNombre = inputs[0] ? inputs[0].value.trim() : '';
+      acompananteApellido = inputs[1] ? inputs[1].value.trim() : '';
+    }
   }
 
-  const cancion = document.querySelector('.rsvp-input[placeholder="Nombre de la canción..."]');
-  mensaje += `\n🎵 Canción que me gustaría escuchar y bailar: ${cancion && cancion.value.trim() ? cancion.value.trim() : ''}`;
+  const cancionInput = document.querySelector('.rsvp-input[placeholder="Nombre de la canción..."]');
+  const cancion = cancionInput ? cancionInput.value.trim() : '';
 
-  // Número ofuscado
-  const p = ['+', '5', '1', '9', '5', '7', '5', '0', '4', '7', '4', '7'].join('');
-  const url = `https://wa.me/${p.replace('+','')}?text=${encodeURIComponent(mensaje)}`;
-  window.open(url, '_blank');
+  const payload = {
+    asistencia: asistencia === 'si' ? 'Sí, confirma' : 'No podrá asistir',
+    invitadoNombre,
+    invitadoApellido,
+    acompananteNombre,
+    acompananteApellido,
+    cancion
+  };
 
-  const toast = document.getElementById('toast');
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 3500);
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.style.opacity = '0.6'; }
+
+  fetch(SHEETS_ENDPOINT, {
+    method: 'POST',
+    mode: 'no-cors', // Apps Script no responde con headers CORS; enviamos "a ciegas"
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  })
+  .catch(() => {}) // no-cors no permite leer errores reales; seguimos igual
+  .finally(() => {
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3500);
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'RESPUESTA ENVIADA ✓'; }
+  });
 }
 
 // ── MÚSICA (archivo MP3 propio) ──
