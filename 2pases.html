@@ -1265,7 +1265,7 @@
     </div>
 
     <div class="rsvp-field" id="personasSection">
-      <span class="rsvp-label"><strong>Esta invitación es personal.</strong><br>
+      <span class="rsvp-label"><strong>Esta invitación permite el ingreso de 1 acompañante.</strong><br>
         A continuación, registre sus datos:</span>
       <div class="counter-row">
                      </div>
@@ -1544,18 +1544,17 @@ function handlePhotoUpload(e) {
 })();
 
 // --- CONFIGURACIÓN DE INVITADOS ---
-let personas = 1; // Siempre será 1 para la invitación personal
+const personasLabels = ['INVITADO', 'ACOMPAÑANTE']; // invitado + 1 acompañante
 
 function renderPersonas() {
   const list = document.getElementById('personasList');
   if (!list) return; 
   list.innerHTML = '';
-  
-  // Genera el bloque de 1 invitado (nunca sumará ni restará)
-  for (let i = 1; i <= personas; i++) {
+
+  personasLabels.forEach(label => {
     list.innerHTML += `
     <div class="person-block">
-      <p class="person-title">INVITADO</p>
+      <p class="person-title">${label}</p>
       <div class="rsvp-field">
         <span class="rsvp-label">NOMBRE *</span>
         <input class="rsvp-input" type="text" placeholder="Nombre">
@@ -1565,7 +1564,7 @@ function renderPersonas() {
         <input class="rsvp-input" type="text" placeholder="Apellidos">
       </div>
     </div>`;
-  }
+  });
 }
 
 // Ejecutar al cargar la página
