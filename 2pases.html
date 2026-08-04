@@ -1070,7 +1070,7 @@
 <section class="section quote-section" id="s1">
   <p class="quote-text">
     "Mis 60 años, una historia de amor que hoy se convierte en testimonio de fortaleza y gratitud. </br></br>
-    Celebro la vida, la inspiración que me brindó mi familia y la dicha de compartir este instante contigo.</em>"
+    Celebro la vida, la inspiración que me brindó Dios, mi familia y la dicha de compartir este instante contigo.</em>"
   </p>
   <div class="divider"></div>
 </section>
@@ -1265,7 +1265,7 @@
     </div>
 
     <div class="rsvp-field" id="personasSection">
-      <span class="rsvp-label"><strong>Esta invitación permite el ingreso de 1 acompañante.</strong><br>
+      <span class="rsvp-label"><strong>Esta invitación es personal.</strong><br>
         A continuación, registre sus datos:</span>
       <div class="counter-row">
                      </div>
@@ -1544,17 +1544,18 @@ function handlePhotoUpload(e) {
 })();
 
 // --- CONFIGURACIÓN DE INVITADOS ---
-const personasLabels = ['INVITADO', 'ACOMPAÑANTE']; // invitado + 1 acompañante
+let personas = 1; // Siempre será 1 para la invitación personal
 
 function renderPersonas() {
   const list = document.getElementById('personasList');
   if (!list) return; 
   list.innerHTML = '';
-
-  personasLabels.forEach(label => {
+  
+  // Genera el bloque de 1 invitado (nunca sumará ni restará)
+  for (let i = 1; i <= personas; i++) {
     list.innerHTML += `
     <div class="person-block">
-      <p class="person-title">${label}</p>
+      <p class="person-title">INVITADO</p>
       <div class="rsvp-field">
         <span class="rsvp-label">NOMBRE *</span>
         <input class="rsvp-input" type="text" placeholder="Nombre">
@@ -1564,7 +1565,7 @@ function renderPersonas() {
         <input class="rsvp-input" type="text" placeholder="Apellidos">
       </div>
     </div>`;
-  });
+  }
 }
 
 // Ejecutar al cargar la página
